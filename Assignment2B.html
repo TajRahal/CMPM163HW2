@@ -190,6 +190,7 @@ float turbulence( vec3 p ) {
 
 		uniform samplerCube tCube;
 		uniform float reflectStr;
+		uniform float rx, ry, time;
 
 		varying vec3 vI, vWorldNormal;
 		uniform sampler2D tWater;
@@ -332,6 +333,9 @@ void main()
 		tWater: { type: "t", value: texture1 },
 		tCube: { type: "t", value: cubeMap },
 		reflectStr: {type: "float", value: options.reflectStr},
+		rx: {type: "f", value: window.innerWidth},
+        ry: {type: "f", value: window.innerHeight},
+		time: {type: "f", value: 0.0},
 	};
 	
 	var uniforms2 =	 {
