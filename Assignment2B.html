@@ -190,44 +190,22 @@ float turbulence( vec3 p ) {
 
 		uniform samplerCube tCube;
 		uniform float reflectStr;
-		uniform float rx, ry, time;
+		
 
 		varying vec3 vI, vWorldNormal;
 		uniform sampler2D tWater;
 		varying vec2 vUv;
 		
-		vec2 uv;
-
-float rnd(float rx)
-{
-    return fract(sin(dot(vec2(rx+47.49,38.2467/(rx+2.3)), vec2(12.9898, 78.233)))* (43758.5453));
-}
-
-float drawCircle(vec2 center, float radius)
-{
-    return 1.0 - smoothstep(0.0, radius, length(uv - center));
-}
-
+		
 
 void main()
 {
-    uv = gl_FragCoord.xy / vec2(rx, ry);
-
 
 			vec3 reflection = reflect( vI, vWorldNormal );
 			vec4 envColor = textureCube( tCube, vec3( -reflection.x, reflection.yz ) );
 			gl_FragColor = mix(vec4(envColor), texture2D(tWater, vUv), reflectStr);
 			//gl_FragColor = vec4(texture2D(tWater, vUv));gl_FragColor = texture2D(t1, texCoord);
-    float j;
-    
-    for(int i = 0; i < 200; i++)
-    {
-        j = float(i);
-        float speed = 0.01+rnd(cos(j))*(0.7+0.5*cos(j/(float(200)*0.25)));
-        vec2 center = vec2((0.25-uv.y)*0.2+rnd(j)+0.1*cos((time*0.1)+sin(j)), mod(sin(j)-speed*(time*0.1*(0.1+0.3)), 1.0));
-        gl_FragColor += vec4(0.8*drawCircle(center, 0.002+speed*0.012));
-    }
-		}
+ }
   
 		</script>
 
@@ -260,10 +238,35 @@ void main()
 		
 	uniform samplerCube tCube;
 	varying vec3 vWorldPosition;
+	uniform float rx, ry, time;
+	vec2 uv;
+
+float rnd(float rx)
+{
+    return fract(sin(dot(vec2(rx+47.49,38.2467/(rx+2.3)), vec2(12.9898, 78.233)))* (43758.5453));
+}
+
+float drawCircle(vec2 center, float radius)
+{
+    return 1.0 - smoothstep(0.0, radius, length(uv - center));
+}
+
 
 	void main() {
-
+	
+	    uv = gl_FragCoord.xy / vec2(rx, ry);
 		gl_FragColor = textureCube( tCube, vec3( vWorldPosition ) );
+	float j;
+    
+    for(int i = 0; i < 200; i++)
+    {
+        j = float(i);
+        float speed = 0.01+rnd(cos(j))*(0.7+0.5*cos(j/(float(200)*0.25)));
+        vec2 center = vec2((0.25-uv.y)*0.2+rnd(j)+0.1*cos((time*0.1)+sin(j)), mod(sin(j)-speed*(time*0.1*(0.1+0.3)), 1.0));
+        gl_FragColor += vec4(0.8*drawCircle(center, 0.002+speed*0.012));
+    }
+		}
+
 	}
 	
     </script>
@@ -320,7 +323,7 @@ void main()
 			'negz2.jpg',
 		] );
 		
-		var geometry1 = new THREE.PlaneBufferGeometry( window.innerWidth, window.innerHeight )
+		var geometry1 = new THREE.PlaneGeometry( 5, 5, 300, 300 );
 		var geometry2 = new THREE.BoxGeometry( 2000, 2000, 2000 );
 		//var geometry1 = new THREE.SphereGeometry( 1, 200, 200 );
         //var geometry2 = new THREE.TorusKnotGeometry( 1, 0.1, 100, 16 );
@@ -333,13 +336,14 @@ void main()
 		tWater: { type: "t", value: texture1 },
 		tCube: { type: "t", value: cubeMap },
 		reflectStr: {type: "float", value: options.reflectStr},
+	};
+	
+	var uniforms2 =	 {
+		tCube: { type: "t", value: cubeMap } 
 		rx: {type: "f", value: window.innerWidth},
         ry: {type: "f", value: window.innerHeight},
 		time: {type: "f", value: 0.0},
 	};
-	
-	var uniforms2 =	 {
-		tCube: { type: "t", value: cubeMap } };
           
 	//var uniforms2 =  {
 		//in_val:  { type: "f", value: 0.0 },
