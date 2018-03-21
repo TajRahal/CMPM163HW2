@@ -194,12 +194,38 @@ float turbulence( vec3 p ) {
 		varying vec3 vI, vWorldNormal;
 		uniform sampler2D tWater;
 		varying vec2 vUv;
+		
+		vec2 uv;
 
-		void main() {
+float rnd(float rx)
+{
+    return fract(sin(dot(vec2(rx+47.49,38.2467/(rx+2.3)), vec2(12.9898, 78.233)))* (43758.5453));
+}
+
+float drawCircle(vec2 center, float radius)
+{
+    return 1.0 - smoothstep(0.0, radius, length(uv - center));
+}
+
+
+void main()
+{
+    uv = gl_FragCoord.xy / vec2(rx, ry);
+
+
 			vec3 reflection = reflect( vI, vWorldNormal );
 			vec4 envColor = textureCube( tCube, vec3( -reflection.x, reflection.yz ) );
 			gl_FragColor = mix(vec4(envColor), texture2D(tWater, vUv), reflectStr);
-			//gl_FragColor = vec4(texture2D(tWater, vUv));
+			//gl_FragColor = vec4(texture2D(tWater, vUv));gl_FragColor = texture2D(t1, texCoord);
+    float j;
+    
+    for(int i = 0; i < 200; i++)
+    {
+        j = float(i);
+        float speed = 0.01+rnd(cos(j))*(0.7+0.5*cos(j/(float(200)*0.25)));
+        vec2 center = vec2((0.25-uv.y)*0.2+rnd(j)+0.1*cos((time*0.1)+sin(j)), mod(sin(j)-speed*(time*0.1*(0.1+0.3)), 1.0));
+        gl_FragColor += vec4(0.8*drawCircle(center, 0.002+speed*0.012));
+    }
 		}
   
 		</script>
